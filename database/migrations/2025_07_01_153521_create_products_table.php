@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('productions', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('gtin')->unique();
+            $table->string('gtin');
             $table->string('language', 2)->nullable();
             $table->string('title')->nullable();
             $table->text('description')->nullable();

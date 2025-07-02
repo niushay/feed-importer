@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\CsvImporter;
+use App\Services\Imports\CsvImporter;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
@@ -44,8 +44,10 @@ class FeedImporter extends Command
 
         $importerClass = $this->importerServices[$extension];
         $importer = app($importerClass);
-        $modelClass = 'App\\Models\\' . ucfirst($model);
-        $result = $importer->import($filePath, $modelClass);
+
+        $this->output->title('Starting import...');
+        $result = $importer->import($filePath, $model, $this->output);
+        $this->output->success('Import completed!');
 
         $this->info("✅  {$result['success']} row(s) imported successfully. ❌  {$result['error']} row(s) failed.");
         return CommandAlias::SUCCESS;
@@ -59,7 +61,8 @@ class FeedImporter extends Command
         }
 
         if (!$this->isSupportedFormat($extension)) {
-            $this->error("Unsupported file format: '{$extension}'.");
+            $supportedFormats = implode(', ', array_keys($this->importerServices));
+            $this->error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
             return false;
         }
 
