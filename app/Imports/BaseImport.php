@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -21,7 +22,11 @@ abstract class BaseImport implements
     protected int $successCount = 0;
     protected int $errorCount = 0;
 
-    abstract public function model(array $row);
+    /**
+     * @param array<string, mixed> $row
+     * @return Model|null
+     */
+    abstract public function model(array $row): ?Model;
 
     protected function incrementSuccessCount(): void
     {

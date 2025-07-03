@@ -5,10 +5,17 @@ namespace App\Services\Imports;
 use App\Services\Imports\contracts\ImporterInterface;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Console\Command;
 
 class CsvImporter implements ImporterInterface
 {
-    public function import(string $filePath, string $model, $commandContext): array
+    /**
+     * @param string $filePath
+     * @param string $model
+     * @param Command $commandContext
+     * @return array{success: int, error: int}
+     */
+    public function import(string $filePath, string $model, Command $commandContext): array
     {
         $importClass = 'App\\Imports\\' . ucfirst($model) . 'Import';
         try {
@@ -20,7 +27,7 @@ class CsvImporter implements ImporterInterface
             $errorCount = $importObject->getErrorCount();
         } catch (\Exception $e) {
             Log::error("Error processing file: {$e->getMessage()}");
-            $totalRows = count(file($filePath)) - 1;
+            $totalRows = ($lines = @file($filePath)) ? count($lines) - 1 : 0;
             return ['success' => 0, 'error' => $totalRows];
         }
 

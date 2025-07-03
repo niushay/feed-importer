@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Imports\BaseImport;
+use App\Services\Imports\contracts\ImporterInterface;
 use App\Services\Imports\CsvImporter;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
@@ -21,8 +23,11 @@ class FeedImporter extends Command
      * @var string
      */
     protected $description = 'Import data from a file (e.g., CSV) into the database';
+
     /**
      * Supported file types and their corresponding importer services.
+     *
+     * @var array<string, class-string<ImporterInterface>>
      */
     protected array $importerServices = [
         'csv' => CsvImporter::class,
@@ -32,7 +37,7 @@ class FeedImporter extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $filePath = $this->argument('file');
         $model = $this->option('model');
