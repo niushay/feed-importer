@@ -21,6 +21,21 @@ abstract class BaseImport implements
     use Importable, SkipsErrors;
     protected int $successCount = 0;
     protected int $errorCount = 0;
+    protected bool $hasHeader;
+
+    public function __construct(bool $hasHeader)
+    {
+        $this->hasHeader = $hasHeader;
+    }
+
+    /**
+     * Specify the row number for the heading row.
+     * @return int
+     */
+    public function headingRow(): int
+    {
+        return $this->hasHeader ? 1 : 0;
+    }
 
     /**
      * @param array<string, mixed> $row

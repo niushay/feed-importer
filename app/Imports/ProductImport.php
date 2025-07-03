@@ -19,16 +19,18 @@ class ProductImport extends BaseImport implements WithEvents
     public function model(array $row): ?Model
     {
         try {
-            $this->incrementSuccessCount();
-            return new Product([
-                'gtin' => $row['gtin'],
-                'language' => $row['language'],
-                'title' => $row['title'],
-                'picture' => $row['picture'],
-                'description' => $row['description'],
-                'price' => $row['price'],
-                'stock' => $row['stock'],
+            $counter = 0;
+            $product = new Product([
+                'gtin' => $row['gtin'] ?? $row[$counter],
+                'language' => $row['language']?? $row[$counter + 1],
+                'title' => $row['title']?? $row[$counter + 2],
+                'picture' => $row['picture']?? $row[$counter + 3],
+                'description' => $row['description']?? $row[$counter + 4],
+                'price' => $row['price']?? $row[$counter + 5],
+                'stock' => $row['stock']?? $row[$counter + 6],
             ]);
+            $this->incrementSuccessCount();
+            return $product;
         } catch (\Exception $e) {
             $this->incrementErrorCount();
             return null;

@@ -19,7 +19,8 @@ class CsvImporter implements ImporterInterface
     {
         $importClass = 'App\\Imports\\' . ucfirst($model) . 'Import';
         try {
-            $importObject = new $importClass();
+            $hasHeader = filter_var($commandContext->option('with-header'), FILTER_VALIDATE_BOOLEAN);
+            $importObject = new $importClass($hasHeader);
             Log::info("Import started for {$filePath}");
             Excel::import($importObject->withOutput($commandContext->getOutput()), $filePath); //without queue
 //            Excel::queueImport(new $importObject, $filePath); //With queue

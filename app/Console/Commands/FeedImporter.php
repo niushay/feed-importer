@@ -15,7 +15,10 @@ class FeedImporter extends Command
      *
      * @var string
      */
-    protected $signature = 'import:feed {file=storage/app/public/feed.csv : Path to the feed file} {--model=Product : Type of the data (e.g., product, user)}';
+    protected $signature = 'import:feed
+    {file=storage/app/public/feed.csv : Path to the feed file}
+    {--model=Product : Type of the data (e.g., product, user)}
+    {--with-header=true : Specify if the file has a header row}';
 
     /**
      * The console command description.
