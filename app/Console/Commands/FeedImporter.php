@@ -18,7 +18,8 @@ class FeedImporter extends Command
     protected $signature = 'import:feed
     {file=storage/app/public/feed.csv : Path to the feed file}
     {--model=Product : Type of the data (e.g., product, user)}
-    {--with-header=true : Specify if the file has a header row}';
+    {--with-header=true : Specify if the file has a header row}
+    {--with-queue=false : Whether to run the import in the queue}';
 
     /**
      * The console command description.
@@ -57,7 +58,11 @@ class FeedImporter extends Command
         $result = $importer->import($filePath, $model, $this);
         $this->output->success('Import completed!');
 
-        $this->info("✅  {$result['success']} row(s) imported successfully. ❌  {$result['error']} row(s) failed.");
+        if ($result['success'] === 0 && $result['error'] === 0 && $this->option('with-queue')) {
+            $this->info('ℹ️  Import has been queued. Results will appear once processing completes.');
+        } else {
+            $this->info("✅  {$result['success']} row(s) imported successfully. ❌  {$result['error']} row(s) failed.");
+        }
         return CommandAlias::SUCCESS;
     }
 

@@ -32,6 +32,7 @@ class ProductImport extends BaseImport implements WithEvents
             $this->incrementSuccessCount();
             return $product;
         } catch (\Exception $e) {
+            Log::error("Error importing row : {$row['gtin']}: {$e->getMessage()}");
             $this->incrementErrorCount();
             return null;
         }

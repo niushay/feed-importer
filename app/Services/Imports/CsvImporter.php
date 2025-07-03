@@ -2,6 +2,7 @@
 
 namespace App\Services\Imports;
 
+use App\Jobs\ImportFileJob;
 use App\Services\Imports\contracts\ImporterInterface;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,22 +21,28 @@ class CsvImporter implements ImporterInterface
         $importClass = 'App\\Imports\\' . ucfirst($model) . 'Import';
         try {
             $hasHeader = filter_var($commandContext->option('with-header'), FILTER_VALIDATE_BOOLEAN);
+            $shouldQueue = filter_var($commandContext->option('with-queue'), FILTER_VALIDATE_BOOLEAN);
+
             $importObject = new $importClass($hasHeader);
             Log::info("Import started for {$filePath}");
-            Excel::import($importObject->withOutput($commandContext->getOutput()), $filePath); //without queue
-//            Excel::queueImport(new $importObject, $filePath); //With queue
-            $successCount = $importObject->getSuccessCount();
-            $errorCount = $importObject->getErrorCount();
+
+            if ($shouldQueue) {
+                ImportFileJob::dispatch($filePath, $importClass, $hasHeader);
+                Log::info("Queued import dispatched for {$filePath}");
+                return ['success' => 0, 'error' => 0];
+            } else {
+                Excel::import($importObject->withOutput($commandContext->getOutput()), $filePath);
+                $successCount = $importObject->getSuccessCount();
+                $errorCount = $importObject->getErrorCount();
+                return [
+                    'success' => $successCount,
+                    'error' => $errorCount,
+                ];
+            }
         } catch (\Exception $e) {
             Log::error("Error processing file: {$e->getMessage()}");
             $totalRows = ($lines = @file($filePath)) ? count($lines) - 1 : 0;
             return ['success' => 0, 'error' => $totalRows];
         }
-
-        Log::info("Import finished: {$successCount} success, {$errorCount} failed.");
-        return [
-            'success' => $successCount,
-            'error' => $errorCount,
-        ];
     }
 }
