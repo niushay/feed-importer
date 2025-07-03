@@ -5,12 +5,8 @@ namespace App\Imports;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\AfterImport;
-use Maatwebsite\Excel\Events\BeforeImport;
-use Maatwebsite\Excel\Events\ImportFailed;
 
-class ProductImport extends BaseImport implements WithEvents
+class ProductImport extends BaseImport
 {
     /**
     * @param array $row
@@ -36,23 +32,5 @@ class ProductImport extends BaseImport implements WithEvents
             $this->incrementErrorCount();
             return null;
         }
-    }
-
-    /**
-     * @return array<class-string, callable>
-     */
-    public function registerEvents(): array
-    {
-        return [
-            BeforeImport::class => function (BeforeImport $event) {
-                Log::info("Import event started");
-            },
-            AfterImport::class => function (AfterImport $event) {
-                Log::info("Import event completed");
-            },
-            ImportFailed::class => function (ImportFailed $event) {
-                Log::error("Import failed: {$event->getException()}");
-            },
-        ];
     }
 }

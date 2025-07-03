@@ -2,21 +2,29 @@
 
 namespace App\Imports;
 
+use App\Listeners\LogImportCompleted;
+use App\Listeners\LogImportFailed;
+use App\Listeners\LogImportStarted;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\ImportFailed;
 
 abstract class BaseImport implements
     ToModel,
     WithHeadingRow,
     WithProgressBar,
     WithChunkReading,
-    WithBatchInserts
+    WithBatchInserts,
+    WithEvents
 {
     use Importable, SkipsErrors;
     protected int $successCount = 0;
@@ -71,5 +79,17 @@ abstract class BaseImport implements
     public function batchSize(): int
     {
         return 100;
+    }
+
+    /**
+     * @return array<class-string, callable>
+     */
+    public function registerEvents(): array
+    {
+        return [
+            BeforeImport::class => [LogImportStarted::class],
+            AfterImport::class => [LogImportCompleted::class],
+            ImportFailed::class => [LogImportFailed::class],
+        ];
     }
 }
