@@ -3,16 +3,14 @@
 namespace App\Imports;
 
 use App\Models\Product;
-use Illuminate\Console\OutputStyle;
-use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\ImportFailed;
 
-class ProductImport extends BaseImport implements ToModel, WithHeadingRow, WithProgressBar
+class ProductImport extends BaseImport implements WithEvents
 {
-    use Importable;
-
     /**
     * @param array $row
     *
@@ -37,8 +35,18 @@ class ProductImport extends BaseImport implements ToModel, WithHeadingRow, WithP
         }
     }
 
-    public function batchSize(): int
+    public function registerEvents(): array
     {
-        return 100;
+        return [
+            BeforeImport::class => function (BeforeImport $event) {
+                Log::info("Import event started for ");
+            },
+            AfterImport::class => function (AfterImport $event) {
+                Log::info("Import event completed for ");
+            },
+            ImportFailed::class => function (ImportFailed $event) {
+                Log::error("Import failed: {$event->getException()}");
+            },
+        ];
     }
 }

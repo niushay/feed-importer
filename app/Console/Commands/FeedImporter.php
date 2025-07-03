@@ -46,7 +46,7 @@ class FeedImporter extends Command
         $importer = app($importerClass);
 
         $this->output->title('Starting import...');
-        $result = $importer->import($filePath, $model, $this->output);
+        $result = $importer->import($filePath, $model, $this);
         $this->output->success('Import completed!');
 
         $this->info("✅  {$result['success']} row(s) imported successfully. ❌  {$result['error']} row(s) failed.");

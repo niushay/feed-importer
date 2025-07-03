@@ -2,10 +2,26 @@
 
 namespace App\Imports;
 
-abstract class BaseImport
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithProgressBar;
+
+abstract class BaseImport implements
+    ToModel,
+    WithHeadingRow,
+    WithProgressBar,
+    WithChunkReading,
+    WithBatchInserts
 {
+    use Importable, SkipsErrors;
     protected int $successCount = 0;
     protected int $errorCount = 0;
+
+    abstract public function model(array $row);
 
     protected function incrementSuccessCount(): void
     {
@@ -27,5 +43,13 @@ abstract class BaseImport
         return $this->errorCount;
     }
 
-    abstract public function model(array $row);
+    public function chunkSize(): int
+    {
+        return 100;
+    }
+
+    public function batchSize(): int
+    {
+        return 100;
+    }
 }
