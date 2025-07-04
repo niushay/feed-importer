@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Events\BeforeImport;
 
 class LogImportStarted
 {
@@ -14,10 +15,7 @@ class LogImportStarted
         //
     }
 
-    /**
-     * Handle the event.
-     */
-    public function handle(object $event): void
+    public function __invoke(BeforeImport $event): void
     {
         Log::info('Import started using reader: ' . get_class($event->getReader()));
     }

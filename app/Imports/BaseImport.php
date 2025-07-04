@@ -87,9 +87,14 @@ abstract class BaseImport implements
     public function registerEvents(): array
     {
         return [
-            BeforeImport::class => [LogImportStarted::class],
-            AfterImport::class => [LogImportCompleted::class],
-            ImportFailed::class => [LogImportFailed::class],
+            BeforeImport::class => new LogImportStarted(),
+            AfterImport::class => new LogImportCompleted(),
+            ImportFailed::class => new LogImportFailed()
         ];
+    }
+
+    protected function getField(array $row, string $key, int $index)
+    {
+        return array_key_exists($key, $row) ? $row[$key] : ($row[$index] ?? null);
     }
 }

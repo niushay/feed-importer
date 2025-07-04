@@ -15,20 +15,19 @@ class ProductImport extends BaseImport
     public function model(array $row): ?Model
     {
         try {
-            $counter = 0;
             $product = new Product([
-                'gtin' => $row['gtin'] ?? $row[$counter],
-                'language' => $row['language']?? $row[$counter + 1],
-                'title' => $row['title']?? $row[$counter + 2],
-                'picture' => $row['picture']?? $row[$counter + 3],
-                'description' => $row['description']?? $row[$counter + 4],
-                'price' => $row['price']?? $row[$counter + 5],
-                'stock' => $row['stock']?? $row[$counter + 6],
+                'gtin'        => $this->getField($row, 'gtin', 0),
+                'language'    => $this->getField($row, 'language', 1),
+                'title'       => $this->getField($row, 'title', 2),
+                'picture'     => $this->getField($row, 'picture', 3),
+                'description' => $this->getField($row, 'description', 4),
+                'price'       => $this->getField($row, 'price', 5),
+                'stock'       => $this->getField($row, 'stock', 6),
             ]);
             $this->incrementSuccessCount();
             return $product;
         } catch (\Exception $e) {
-            Log::error("Error importing row : {$row['gtin']}: {$e->getMessage()}");
+            Log::error("Error importing row: {$e->getMessage()}");
             $this->incrementErrorCount();
             return null;
         }

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Events\AfterImport;
 
 class LogImportCompleted
 {
@@ -14,10 +15,7 @@ class LogImportCompleted
         //
     }
 
-    /**
-     * Handle the event.
-     */
-    public function handle(object $event): void
+    public function __invoke(AfterImport $event): void
     {
         Log::info('Import completed for: ' . get_class($event->getConcernable()));
     }

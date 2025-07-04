@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Events\ImportFailed;
 
 class LogImportFailed
 {
@@ -14,10 +15,7 @@ class LogImportFailed
         //
     }
 
-    /**
-     * Handle the event.
-     */
-    public function handle(object $event): void
+    public function __invoke(ImportFailed $event): void
     {
         Log::error('Import failed: ' . $event->getException()->getMessage());
     }

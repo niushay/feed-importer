@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Imports\BaseImport;
 use App\Services\Imports\contracts\ImporterInterface;
 use App\Services\Imports\CsvImporter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class FeedImporter extends Command
@@ -44,6 +46,14 @@ class FeedImporter extends Command
     public function handle(): int
     {
         $filePath = $this->argument('file');
+
+        if (!Str::startsWith($filePath, '/') && !file_exists($filePath)) {
+            $resolved = Storage::disk('public')->path($filePath);
+            if (file_exists($resolved)) {
+                $filePath = $resolved;
+            }
+        }
+
         $model = $this->option('model');
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
@@ -56,8 +66,12 @@ class FeedImporter extends Command
 
         $this->output->title('Starting import...');
         $result = $importer->import($filePath, $model, $this);
+        if($result['success']===0 && $result['success'] < $result['error']){
+            $this->error("The file is not imported successfully");
+            Log::error("Import failed: the file could not be imported successfully");
+            return CommandAlias::FAILURE;
+        }
         $this->output->success('Import completed!');
-
         if ($result['success'] === 0 && $result['error'] === 0 && $this->option('with-queue')) {
             $this->info('ℹ️  Import has been queued. Results will appear once processing completes.');
         } else {
@@ -70,17 +84,31 @@ class FeedImporter extends Command
     {
         if (!file_exists($filePath)) {
             $this->error("The file at path '{$filePath}' does not exist.");
+            Log::error("The file at path '{$filePath}' does not exist.");
+//            dd("The file at path '{$filePath}' does not exist.");
+            return false;
+        }
+
+        if (filesize($filePath) === 0) {
+            $this->error("The file at path '{$filePath}' is empty.");
+            Log::error("The file at path '{$filePath}' is empty.");
             return false;
         }
 
         if (!$this->isSupportedFormat($extension)) {
             $supportedFormats = implode(', ', array_keys($this->importerServices));
             $this->error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
+            Log::error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
+//            dd('b');
+
             return false;
         }
 
         if (!$this->isValidModel($model)) {
             $this->error("Invalid or missing model class: '{$model}'.");
+            Log::error("Invalid or missing model class: '{$model}'.");
+//            dd('c');
+
             return false;
         }
 
