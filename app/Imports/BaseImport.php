@@ -23,7 +23,6 @@ abstract class BaseImport implements ToModel, WithBatchInserts, WithChunkReading
     use Importable, SkipsErrors;
 
     protected int $successCount = 0;
-
     protected int $errorCount = 0;
 
     protected bool $hasHeader;
@@ -77,6 +76,8 @@ abstract class BaseImport implements ToModel, WithBatchInserts, WithChunkReading
     }
 
     /**
+     * Register the events for the import.
+     *
      * @return array<class-string, callable>
      */
     public function registerEvents(): array
@@ -90,6 +91,6 @@ abstract class BaseImport implements ToModel, WithBatchInserts, WithChunkReading
 
     protected function getField(array $row, string $key, int $index)
     {
-        return array_key_exists($key, $row) ? $row[$key] : ($row[$index] ?? null);
+        return $row[$key] ?? $row[$index] ?? null;
     }
 }

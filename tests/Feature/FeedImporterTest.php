@@ -123,10 +123,10 @@ test('fails if CSV contains malformed data', function () {
     $fileName = 'malformed.csv';
     createCsvFile($fileName, "gtin,language,title,price,stock\n12345,en,Product Title,non-numeric,5");
 
-    artisan('import:feed', [
+    $result = artisan('import:feed', [
         'file' => $fileName,
-    ])->assertExitCode(Command::FAILURE);
-
+    ]);
+    $result->assertExitCode(Command::FAILURE);
     Storage::disk('public')->delete($fileName);
 });
 

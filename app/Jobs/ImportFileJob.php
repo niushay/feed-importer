@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class ImportFileJob implements ShouldQueue
 {
@@ -27,10 +28,15 @@ class ImportFileJob implements ShouldQueue
         $this->hasHeader = $hasHeader;
     }
 
-    public function handle()
+    public function handle(): void
     {
-        $importObject = new $this->importClass($this->hasHeader);
-        Excel::import($importObject, $this->filePath);
-        Log::info("Import completed for {$this->filePath}: {$importObject->getSuccessCount()} successes, {$importObject->getErrorCount()} errors");
+        try {
+            $importObject = new $this->importClass($this->hasHeader);
+            Excel::import($importObject, $this->filePath);
+
+            Log::info("✅ Import completed for {$this->filePath}: {$importObject->getSuccessCount()} successes, {$importObject->getErrorCount()} errors");
+        } catch (Throwable $e) {
+            Log::error("❌ Failed to import {$this->filePath}: {$e->getMessage()}");
+        }
     }
 }
