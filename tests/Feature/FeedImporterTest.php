@@ -4,8 +4,9 @@ use App\Jobs\ImportFileJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
-use function Pest\Laravel\artisan;
 use Symfony\Component\Console\Command\Command;
+
+use function Pest\Laravel\artisan;
 
 test('fails if file does not exist', function () {
     artisan('import:feed', [
@@ -17,7 +18,7 @@ test('fails if file type is not supported', function () {
     $fakeFile = 'fake.txt';
     createCsvFile($fakeFile, 'fake content');
 
-     artisan('import:feed', [
+    artisan('import:feed', [
         'file' => $fakeFile,
     ])->assertExitCode(Command::FAILURE);
 
@@ -30,7 +31,7 @@ test('fails if model is invalid', function () {
 
     artisan('import:feed', [
         'file' => $fakeCsv,
-        '--model' => 'InvalidModel'
+        '--model' => 'InvalidModel',
     ])->assertExitCode(Command::FAILURE);
 
     Storage::disk('public')->delete($fakeCsv);
@@ -112,7 +113,7 @@ test('fails if CSV structure is invalid', function () {
     createCsvFile($fileName, "testColumn1,testColumn2,testColumn3\n12345,en,Product Title");
 
     artisan('import:feed', [
-        'file' => $fileName
+        'file' => $fileName,
     ])->assertExitCode(Command::FAILURE);
 
     Storage::disk('public')->delete($fileName);
@@ -166,7 +167,7 @@ test('does not queue job when with-queue is false', function () {
 
 test('imports without header', function () {
     $fileName = 'no-header.csv';
-    createCsvFile($fileName, "12345,en,Product Title,,Description,10.00,5");
+    createCsvFile($fileName, '12345,en,Product Title,,Description,10.00,5');
 
     artisan('import:feed', [
         'file' => $fileName,

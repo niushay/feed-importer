@@ -40,6 +40,7 @@ class FeedImporter extends Command
         // 'json' => JsonImporter::class,
         // 'xml' => XmlImporter::class,
     ];
+
     /**
      * Execute the console command.
      */
@@ -47,7 +48,7 @@ class FeedImporter extends Command
     {
         $filePath = $this->argument('file');
 
-        if (!Str::startsWith($filePath, '/') && !file_exists($filePath)) {
+        if (! Str::startsWith($filePath, '/') && ! file_exists($filePath)) {
             $resolved = Storage::disk('public')->path($filePath);
             if (file_exists($resolved)) {
                 $filePath = $resolved;
@@ -57,7 +58,7 @@ class FeedImporter extends Command
         $model = $this->option('model');
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
-        if (!$this->validate($filePath, $extension, $model)) {
+        if (! $this->validate($filePath, $extension, $model)) {
             return CommandAlias::FAILURE;
         }
 
@@ -66,9 +67,10 @@ class FeedImporter extends Command
 
         $this->output->title('Starting import...');
         $result = $importer->import($filePath, $model, $this);
-        if($result['success']===0 && $result['success'] < $result['error']){
-            $this->error("The file is not imported successfully");
-            Log::error("Import failed: the file could not be imported successfully");
+        if ($result['success'] === 0 && $result['success'] < $result['error']) {
+            $this->error('The file is not imported successfully');
+            Log::error('Import failed: the file could not be imported successfully');
+
             return CommandAlias::FAILURE;
         }
         $this->output->success('Import completed!');
@@ -77,37 +79,40 @@ class FeedImporter extends Command
         } else {
             $this->info("✅  {$result['success']} row(s) imported successfully. ❌  {$result['error']} row(s) failed.");
         }
+
         return CommandAlias::SUCCESS;
     }
 
     private function validate(string $filePath, string $extension, string $model): bool
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             $this->error("The file at path '{$filePath}' does not exist.");
             Log::error("The file at path '{$filePath}' does not exist.");
-//            dd("The file at path '{$filePath}' does not exist.");
+
+            //            dd("The file at path '{$filePath}' does not exist.");
             return false;
         }
 
         if (filesize($filePath) === 0) {
             $this->error("The file at path '{$filePath}' is empty.");
             Log::error("The file at path '{$filePath}' is empty.");
+
             return false;
         }
 
-        if (!$this->isSupportedFormat($extension)) {
+        if (! $this->isSupportedFormat($extension)) {
             $supportedFormats = implode(', ', array_keys($this->importerServices));
             $this->error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
             Log::error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
-//            dd('b');
+            //            dd('b');
 
             return false;
         }
 
-        if (!$this->isValidModel($model)) {
+        if (! $this->isValidModel($model)) {
             $this->error("Invalid or missing model class: '{$model}'.");
             Log::error("Invalid or missing model class: '{$model}'.");
-//            dd('c');
+            //            dd('c');
 
             return false;
         }
@@ -122,13 +127,12 @@ class FeedImporter extends Command
 
     private function isValidModel(?string $model): bool
     {
-        if (!$model) {
+        if (! $model) {
             return false;
         }
 
-        $modelClass = "App\\Models\\" . ucfirst($model);
+        $modelClass = 'App\\Models\\'.ucfirst($model);
 
         return class_exists($modelClass);
     }
-
 }

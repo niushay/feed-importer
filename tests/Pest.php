@@ -11,9 +11,8 @@
 |
 */
 
-
 pest()->extend(Tests\TestCase::class)
-  ->use(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -42,8 +41,8 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function createCsvFile(string $filename = "products.csv",
-                       string $content = "gtin,language,title,picture,description,price,stock\n12345,en,Product Title,,Description,10.00,5")
+function createCsvFile(string $filename = 'products.csv',
+    string $content = "gtin,language,title,picture,description,price,stock\n12345,en,Product Title,,Description,10.00,5")
 {
     test()->createCsvFile($filename, $content);
 }
