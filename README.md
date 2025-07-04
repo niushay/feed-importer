@@ -1,3 +1,4 @@
+
 # Data Feed Importer
 
 A modular, extensible command-line tool built with Laravel to import data (initially from CSV) into a database. Designed with scalability, queue support, and clean architecture in mind.
@@ -15,6 +16,7 @@ A modular, extensible command-line tool built with Laravel to import data (initi
 - [Queue Support](#queue-support)
 - [Testing](#testing)
 - [Developer Tools](#developer-tools)
+- [Code Style & Linting](#code-style--linting)
 - [Changing Database](#changing-database)
 - [Monitoring & Logging](#monitoring--logging)
 - [Extending the Importer](#extending-the-importer)
@@ -51,7 +53,7 @@ sail up -d --force-recreate --build
 
 ### Command Signature
 
-```php
+```bash
 sail artisan import:feed 
     {file=storage/app/public/feed.csv : Path to the feed file} 
     {--model=Product : Type of the data (e.g., product, user)} 
@@ -131,7 +133,7 @@ Events are used for monitoring the import process:
 
 ## Queue Support
 
-To process large files without blocking, run with the `--with-queue=true` flag. Then, make sure the queue worker is running:
+To process large files without blocking, run with the `--with-queue=true` flag. Then make sure the queue worker is running:
 
 ```bash
 sail artisan queue:work
@@ -139,7 +141,7 @@ sail artisan queue:work
 
 Monitor jobs using Laravel Telescope at:
 
-```bash
+```
 http://localhost/telescope
 ```
 
@@ -153,7 +155,7 @@ We use [Pest](https://pestphp.com) for feature tests.
 sail artisan test --env=testing
 ```
 
-Key tests include:
+Test coverage includes:
 
 - ✅ Importing with and without headers
 - ✅ Queue dispatching
@@ -165,12 +167,20 @@ Key tests include:
 
 ## Developer Tools
 
-- 🧪 **Pest**: Testing framework
-- 🛡 **PHPStan + Larastan**: Static analysis
+- 🧪 **Pest** – Minimal testing with expressive syntax
+- 🛡 **PHPStan + Larastan** – Static code analysis
+
+Run PHPStan analysis:
 
 ```bash
 sail php vendor/bin/phpstan analyse --memory-limit=2G
 ```
+
+---
+
+## Code Style & Linting
+
+Code style is enforced using [Laravel Pint](https://laravel.com/docs/12.x/pint). A GitHub Actions workflow runs Pint on every push and pull request. It can also auto-fix style issues.
 
 ---
 
@@ -192,7 +202,6 @@ Make sure your `.env` or `.env.testing` reflects the new DB settings.
 
 - **Laravel Telescope**: Available at `http://localhost/telescope`
 - **Events**: Used for structured logging
-- **Log Channels**: Set in `.env` (e.g., `LOG_CHANNEL=stack`)
 
 ---
 
