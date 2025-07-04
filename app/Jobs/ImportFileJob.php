@@ -15,7 +15,9 @@ class ImportFileJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $filePath;
+
     protected $importClass;
+
     protected $hasHeader;
 
     public function __construct($filePath, $importClass, $hasHeader)

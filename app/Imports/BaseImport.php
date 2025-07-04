@@ -18,17 +18,14 @@ use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\ImportFailed;
 
-abstract class BaseImport implements
-    ToModel,
-    WithHeadingRow,
-    WithProgressBar,
-    WithChunkReading,
-    WithBatchInserts,
-    WithEvents
+abstract class BaseImport implements ToModel, WithBatchInserts, WithChunkReading, WithEvents, WithHeadingRow, WithProgressBar
 {
     use Importable, SkipsErrors;
+
     protected int $successCount = 0;
+
     protected int $errorCount = 0;
+
     protected bool $hasHeader;
 
     public function __construct(bool $hasHeader)
@@ -38,7 +35,6 @@ abstract class BaseImport implements
 
     /**
      * Specify the row number for the heading row.
-     * @return int
      */
     public function headingRow(): int
     {
@@ -46,8 +42,7 @@ abstract class BaseImport implements
     }
 
     /**
-     * @param array<string, mixed> $row
-     * @return Model|null
+     * @param  array<string, mixed>  $row
      */
     abstract public function model(array $row): ?Model;
 
@@ -87,9 +82,9 @@ abstract class BaseImport implements
     public function registerEvents(): array
     {
         return [
-            BeforeImport::class => new LogImportStarted(),
-            AfterImport::class => new LogImportCompleted(),
-            ImportFailed::class => new LogImportFailed()
+            BeforeImport::class => new LogImportStarted,
+            AfterImport::class => new LogImportCompleted,
+            ImportFailed::class => new LogImportFailed,
         ];
     }
 

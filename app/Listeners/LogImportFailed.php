@@ -17,6 +17,6 @@ class LogImportFailed
 
     public function __invoke(ImportFailed $event): void
     {
-        Log::error('Import failed: ' . $event->getException()->getMessage());
+        Log::error('Import failed: '.$event->getException()->getMessage());
     }
 }

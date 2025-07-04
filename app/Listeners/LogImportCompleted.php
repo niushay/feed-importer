@@ -17,6 +17,6 @@ class LogImportCompleted
 
     public function __invoke(AfterImport $event): void
     {
-        Log::info('Import completed for: ' . get_class($event->getConcernable()));
+        Log::info('Import completed for: '.get_class($event->getConcernable()));
     }
 }

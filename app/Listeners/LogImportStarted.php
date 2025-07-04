@@ -17,6 +17,6 @@ class LogImportStarted
 
     public function __invoke(BeforeImport $event): void
     {
-        Log::info('Import started using reader: ' . get_class($event->getReader()));
+        Log::info('Import started using reader: '.get_class($event->getReader()));
     }
 }
