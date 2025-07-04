@@ -10,9 +10,6 @@ class ProductImport extends BaseImport
 {
     /**
      * Map CSV row to a Product model.
-     *
-     * @param array $row
-     * @return Model|null
      */
     public function model(array $row): ?Model
     {
@@ -31,10 +28,6 @@ class ProductImport extends BaseImport
         }
     }
 
-    /**
-     * @param array $row
-     * @return array
-     */
     private function mapRowToProductData(array $row): array
     {
         return [

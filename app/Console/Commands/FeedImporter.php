@@ -25,6 +25,7 @@ class FeedImporter extends Command
      * @var string
      */
     protected $description = 'Import data from a file (e.g., CSV) into the database';
+
     protected FileImporterService $fileImporterService;
 
     public function __construct(FileImporterService $fileImporterService)
@@ -41,14 +42,14 @@ class FeedImporter extends Command
         $filePath = $this->argument('file');
         $resolvedFilePath = $this->fileImporterService->resolveFilePath($filePath);
 
-        if (!$resolvedFilePath) {
+        if (! $resolvedFilePath) {
             return CommandAlias::FAILURE;
         }
 
         $model = $this->option('model');
         $extension = pathinfo($resolvedFilePath, PATHINFO_EXTENSION);
 
-        if (!$this->fileImporterService->validateFile($resolvedFilePath, $extension, $model)) {
+        if (! $this->fileImporterService->validateFile($resolvedFilePath, $extension, $model)) {
             return CommandAlias::FAILURE;
         }
 
@@ -60,6 +61,7 @@ class FeedImporter extends Command
 
         if ($result['success'] === 0 && $result['error'] > 0) {
             $this->error('The file is not imported successfully');
+
             return CommandAlias::FAILURE;
         }
 

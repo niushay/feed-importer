@@ -3,8 +3,8 @@
 namespace App\Services\Imports;
 
 use App\Services\Imports\contracts\ImporterInterface;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class FileImporterService
 {
@@ -15,8 +15,8 @@ class FileImporterService
      */
     protected array $importerServices = [
         'csv' => CsvImporter::class,
-//        'json' => JsonImporter::class,
-//        'xml' => XmlImporter::class,
+        //        'json' => JsonImporter::class,
+        //        'xml' => XmlImporter::class,
     ];
 
     public function resolveFilePath(string $filePath): ?string
@@ -27,6 +27,7 @@ class FileImporterService
                 return $resolved;
             }
             Log::error("The file at path '{$filePath}' does not exist.");
+
             return null;
         }
 
@@ -37,17 +38,20 @@ class FileImporterService
     {
         if (! file_exists($filePath) || filesize($filePath) === 0) {
             Log::error("The file at path '{$filePath}' is empty or does not exist.");
+
             return false;
         }
 
         if (! $this->isSupportedFormat($extension)) {
             $supportedFormats = implode(', ', array_keys($this->importerServices));
             Log::error("Unsupported file format: '{$extension}'. Supported formats are: {$supportedFormats}.");
+
             return false;
         }
 
         if (! $this->isValidModel($model)) {
             Log::error("Invalid or missing model class: '{$model}'.");
+
             return false;
         }
 
@@ -61,7 +65,8 @@ class FileImporterService
 
     public function isValidModel(string $model): bool
     {
-        $modelClass = 'App\\Models\\' . ucfirst($model);
+        $modelClass = 'App\\Models\\'.ucfirst($model);
+
         return class_exists($modelClass);
     }
 
@@ -70,6 +75,7 @@ class FileImporterService
         if ($this->isSupportedFormat($extension)) {
             return $this->importerServices[$extension];
         }
+
         return '';
     }
 }

@@ -4,19 +4,16 @@ namespace App\Services\Imports;
 
 use App\Jobs\ImportFileJob;
 use App\Services\Imports\contracts\ImporterInterface;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use Exception;
 
 class CsvImporter implements ImporterInterface
 {
     /**
      * Import the data from the CSV file.
      *
-     * @param string $filePath
-     * @param string $model
-     * @param Command $commandContext
      * @return array{success: int, error: int}
      */
     public function import(string $filePath, string $model, Command $commandContext): array
@@ -35,13 +32,14 @@ class CsvImporter implements ImporterInterface
             return $this->handleDirectImport($filePath, $importClass, $hasHeader, $commandContext);
         } catch (Exception $e) {
             Log::error("Error processing file: {$e->getMessage()}");
+
             return $this->handleImportError($filePath);
         }
     }
 
     private function getImportClass(string $model): string
     {
-        return 'App\\Imports\\' . ucfirst($model) . 'Import';
+        return 'App\\Imports\\'.ucfirst($model).'Import';
     }
 
     private function getHeaderFlag(Command $commandContext): bool
@@ -76,6 +74,7 @@ class CsvImporter implements ImporterInterface
     private function handleImportError(string $filePath): array
     {
         $totalRows = ($lines = @file($filePath)) ? count($lines) - 1 : 0;
+
         return ['success' => 0, 'error' => $totalRows];
     }
 }

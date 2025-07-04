@@ -23,6 +23,7 @@ abstract class BaseImport implements ToModel, WithBatchInserts, WithChunkReading
     use Importable, SkipsErrors;
 
     protected int $successCount = 0;
+
     protected int $errorCount = 0;
 
     protected bool $hasHeader;
