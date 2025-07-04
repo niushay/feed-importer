@@ -28,7 +28,6 @@ A modular, extensible command-line tool built with Laravel to import data (initi
 
 ```bash
 composer install
-composer require laravel/sail --dev
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 sail down --volumes
 sail up -d --force-recreate --build
